@@ -1,0 +1,162 @@
+import React, { useState } from 'react'
+import Axios from 'axios'
+import { AiOutlineDelete, AiOutlineEdit } from 'react-icons/ai'
+import('./App.css')
+
+function App() {
+  const [name, setName] = useState('')
+  const [password, setPassword] = useState('')
+  const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
+  const [userData, setUserData] = useState([])
+  const [updateData, setUpdateData]=useState('')
+
+  const addDatas = () => {
+    Axios.post('http://localhost:5000/create', {
+      name: name,
+      password: password,
+      email: email,
+      phone: phone
+    })
+      .then(() => {
+        setUserData([
+          ...userData,
+          {
+            name: name,
+            password: password,
+            email: email,
+            phone: phone
+          }
+        ])
+        alert('Data saved')
+      }).catch(err => {
+        console.log('Error: ' + err)
+      })
+  }
+
+  const getDatas = () => {
+    Axios.get('http://localhost:5000/view').then(response => {
+      setUserData(response.data)
+    })
+  }
+  const editdata = id => {
+    Axios.get(`http://localhost:5000/view/${id}`).then(result => {
+      console.log(result.data)
+      setUpdateData(()=>{setName={result.data[0].name}, setPassword={result.data[0].pass}})
+    })
+  }
+
+  const deleted = id => {
+    Axios.delete(`http://localhost:5000/delete/${id}`).then(response => {
+      setUserData(
+        userData.filter(val => {
+          return val.id !== id
+        })
+      )
+    })
+  }
+
+  return (
+    <div className='app'>
+      <h1>CRUD APPLICATION USING MYSQL DATABASE</h1>
+      <div className='input'>
+        <label>Name: </label>
+        <input
+          type='text'
+          onChange={e => {
+            setName(e.target.value)
+          }}
+        />
+        <label>Password: </label>
+        <input
+          type='number'
+          onChange={e => {
+            setPassword(e.target.value)
+          }}
+        />
+        <label>Email: </label>
+        <input
+          type='text'
+          onChange={e => {
+            setEmail(e.target.value)
+          }}
+        />
+        <label>Phone: </label>
+        <input
+          type='text'
+          onChange={e => {
+            setPhone(e.target.value)
+          }}
+        />
+        <button onClick={addDatas}>Save</button>
+      </div>
+      <div className='results'>
+        <button onClick={getDatas} className='show'>
+          Show Datas
+        </button>
+        {userData.map((val, key) => {
+          return (
+            <div className='lists' key={(Math.floor * Math.random).toString()}>
+              <h3>Id: {val.id}</h3>
+              <h4>Name: </h4>
+              <p>{val.name}</p>
+              <h4>Password: </h4>
+              <p>{val.password}</p>
+              <h4>Email:</h4>
+              <p> {val.email}</p>
+              <h4>Phone: </h4>
+              <p>{val.phone}</p>
+              <div className='options'>
+                <AiOutlineEdit
+                  className='edit-icon'
+                  onClick={() => {
+                    editdata(val.id)
+                  }}
+                />
+
+                <AiOutlineDelete
+                  onClick={() => {
+                    deleted(val.id)
+                  }}
+                  className='delete-icon'
+                />
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+export default App
+
+
+{this.state.userdatas.map((val, key) => {
+            return (
+              <div key={Math.floor(Math.random * 1000)} className='results '>
+                <label>Id : </label>
+                <p>{val.id}</p>
+                <label>Name : </label>
+                <p>{val.name}</p>
+                <label>Password : </label>
+                <p>{val.password}</p>
+                <button
+                  className='edit'
+                  onClick={() => {
+                    this.editRecord(val.id);
+                  }}
+                >
+                  Edit
+                </button>
+                <button
+                  className='delete'
+                  onClick={() => {
+                    this.deleteRecord(val.id);
+                  }}
+                >
+                  Delete
+                </button>
+              </div>
+            );
+          })}
